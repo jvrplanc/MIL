@@ -165,7 +165,7 @@ def fit_and_test(thread_id, no_splits, mi_model, data: TrainTestData, no_epochs)
     # print("Calculated Categorical Accuracy: " + str(CalculatedCategoricalAccuracy))
     metric = tf.keras.metrics.CategoricalAccuracy()
     metric.update_state(to_categorical(data.y_test), predictions)
-    # print("Categorical accuracy: " + str(metric.result().numpy()))
+    print("Categorical accuracy: " + str(metric.result().numpy()))
 
     idx0 = np.where(y_true_max == 0)
     idx1 = np.where(y_true_max != 0)
@@ -186,7 +186,7 @@ def fit_and_test(thread_id, no_splits, mi_model, data: TrainTestData, no_epochs)
 
     return
 
-
+"""
 def test_bag_level(thread_id, no_splits, data, model_history):
     # Here, the "validation" set is the entire .data file. M.o.:
     # 1. Verification dataset: 'flatten' the input dataset such that there is one entry per image. Label = 1 if positive
@@ -255,7 +255,7 @@ def test_bag_level(thread_id, no_splits, data, model_history):
         name_class[i][split_no] = unique_classes[i]
 
     return
-
+"""
 def predict_bag_label(thread_id, data, model_history):
     unique_img, s = np.unique(data[0], return_index=True)
     indices = np.argsort(s)
@@ -277,10 +277,10 @@ def predict_bag_label(thread_id, data, model_history):
             Class 1: 0.816570486397362, before: 0.6606760098928277
         Avg loss:  0.2827687129378319 , avg acc:  0.9298375189304352
         """
-        """
+
         actual_bag = thread_id + 1
         pred_array = np.full((len(bag), 1), actual_bag)
-        """
+        
         # So this stands or falls with having accurate bag predictions!
 
         bag = np.hstack((bag[:, :-1], pred_array, bag[:, -1:]))
