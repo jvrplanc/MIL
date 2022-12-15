@@ -75,6 +75,8 @@ history_bag, evals_bag, acc_bag = ml_models_bag.fit_and_test_bag(n_splits=n_spli
 # Don't forget to preprocess. So flatten, normalise, resplit
 data_bagged_prepr = data_proc.preprocess_bagged_data(data_bagged)
 
+# CAVEAT: this approach probably gives us "perfect" results because of overfitting (i.e. each bag will be part of the
+# training set for most models)
 data_bagged_truncated =\
     tf.ragged.constant(np.asarray([bag[:, 3:-1] for bag in data_bagged_prepr], dtype='object'), ragged_rank=1)
 bag_predictions = [history_bag[i].model.predict(
