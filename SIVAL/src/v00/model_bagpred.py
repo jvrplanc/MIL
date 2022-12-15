@@ -10,11 +10,7 @@ import models_weighted
 
 """
 PURPOSE OF THIS FILE:
-A simple sanity check whether appending the bag labels to the instance feature vectors can result in better
-instance prediction.
-This is equivalent to having a perfect bag prediction model (and then predicting the instances).
-The same simple model is used for both, a 4 layer fc NN (256 > 128 > 64 > n_image_classes + 1.
-We can add dropouts and regularisation later if need be.
+
 """
 
 SIVAL_data_dir = "../input/amil-sival/"
