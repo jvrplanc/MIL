@@ -164,7 +164,7 @@ def split_and_preprocess(thread_id, X_full, y_full, dest_array, indices, validat
 
     # From X_train and y_train, create a validation dataset
     k_fold = IterativeStratification(n_splits=int(1/validation_split), order=1)  # Somehow this isn't ok
-    splits = k_fold.split(X_train, y_train.astype('int32'))  # Need to cast here or scipy complains about object dtype
+    splits = k_fold.split(X_train, y_train.astype('int32'))  # Need to cast here or scipy complains about object dtyp=e
 
     # Randomly select one of the splits (better way to do this?)
     stop_int = np.random.randint(0, int(1/validation_split) - 1)

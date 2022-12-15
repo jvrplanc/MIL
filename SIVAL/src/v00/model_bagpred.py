@@ -8,6 +8,8 @@ import tensorflow as tf
 
 import models_weighted
 
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'  # CPU faster than GPU on my machine
+
 """
 PURPOSE OF THIS FILE:
 
@@ -68,21 +70,18 @@ history_bag, evals_bag, acc_bag = ml_models_bag.fit_and_test_bag(n_splits=n_spli
                                                                  data=train_test_data_bagged,
                                                                  epochs=epochs,
                                                                  verbose=True)
+
+
 # Don't forget to preprocess. So flatten, normalise, resplit
 data_bagged_prepr = data_proc.preprocess_bagged_data(data_bagged)
 
-# CAVEAT: this approach probably gives us "perfect" results because of overfitting (i.e. each bag will be part of the
-# training set for most models)
 data_bagged_truncated =\
     tf.ragged.constant(np.asarray([bag[:, 3:-1] for bag in data_bagged_prepr], dtype='object'), ragged_rank=1)
-bag_predictions = [history_bag[i].model.predict(
-                        data_bagged_truncated)
-                   for i in range(n_splits)]
-bag_pred_array = [np.argmax(bag_predictions[i], axis=1) + 1 for i in range(n_splits)]
-bag_pred_array = np.transpose(np.asarray(bag_pred_array))
 
-bins = [np.bincount(img) for img in bag_pred_array]
-predicted_bag = np.asarray([np.argmax(bin[1:]) + 1 for bin in bins])
+i = np.random.randint(n_splits)
+bag_predictions = history_bag[i].model.predict(data_bagged_truncated)
+
+predicted_bag = np.argmax(bag_predictions, axis=1) + 1
 
 # Now append the bag label to the instance feature vectors
 data_bagged_labeled = [np.vstack(
@@ -119,6 +118,10 @@ print('\tClass 1: {:.4f}'.format(np.mean(acc_before[:, 1])) + ' +/- {:.4f}'.form
 print("Avg loss before: ", np.mean(evals_before[:, 0]), " after: ", np.mean(evals_after[:, 0]),
       ",\n avg unbalanced acc before: ", np.mean(evals_before[:, 1]), " after: ", np.mean(evals_after[:, 1]))
 
+print("Avg loss on bag: ", np.mean(evals_bag[:, 0]), "+/- ", 1.96*np.std(evals_bag[:, 0]),
+",\n avg acc: ", np.mean(evals_bag[:, 1]), "+/- ", 1.96*np.std(evals_bag[:, 1]),
+      "(95% confidence interval)")
+
 """ First attempt, baseline, w/ perfect prediction:
 Avg balanced accuracy before adding bag labels: 0.8075 , after: 0.8919
 	Class 0: 0.9733 +/- 0.0056, after: 0.9655 +/- 0.0058
@@ -134,3 +137,23 @@ Avg balanced accuracy before adding bag labels: 0.8286
 Avg loss before:  0.47405731678009033  after:  0.26115474849939346 ,
  avg unbalanced acc before:  0.8925511717796326  after:  0.9310192048549653
  """
+
+""" w/ aggregated results
+Avg balanced accuracy before adding bag labels: 0.8245
+	Class 0: 0.9612 +/- 0.0034, after: 0.9573 +/- 0.0053
+	Class 1: 0.6879 +/- 0.0126, after: 0.8458 +/- 0.0162
+Avg loss before:  0.5137299537658692  after:  0.2708542138338089 ,
+ avg unbalanced acc before:  0.8916649043560028  after:  0.9297109127044678
+ """
+
+""" with single model:
+Avg balanced accuracy before adding bag labels: 0.8245
+	Class 0: 0.9612 +/- 0.0034, after: 0.9587 +/- 0.0070
+	Class 1: 0.6879 +/- 0.0126, after: 0.8050 +/- 0.0192
+Avg loss before:  0.5137299537658692  after:  0.3693242758512497 ,
+ avg unbalanced acc before:  0.8916649043560028  after:  0.9195610880851746
+ 
+ Bag stats:
+ Avg loss on bag:  0.9006358683109283 +/-  0.3306202995182667 ,
+ avg acc:  0.736514538526535 +/-  0.09917221784134062 (95% confidence interval)
+"""

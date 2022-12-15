@@ -1,6 +1,9 @@
+import ml_models_inst
 import numpy as np
 import tensorflow as tf
 import threading
+
+from tensorflow.keras.layers import *
 
 
 def bag_model(n_feat, n_classes):
@@ -21,7 +24,7 @@ def bag_model(n_feat, n_classes):
     inputs = Input(shape=(None, n_feat))  # variable number of instances per bag
 
     # Build instance model
-    inst_model = baseline_inst_model(n_feat, n_classes)  # None, n_classes + 1
+    inst_model = ml_models_inst.baseline_inst_model(n_feat, n_classes)  # None, n_classes + 1
 
     instance_output = TimeDistributed(inst_model)(inputs)  # None, None, n_classes + 1
 
