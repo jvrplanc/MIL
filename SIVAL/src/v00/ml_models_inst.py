@@ -18,13 +18,9 @@ def baseline_inst_model(n_feat: int, n_classes: int):
     model = tf.keras.models.Sequential([
         tf.keras.layers.Dense(units=256,
                               activation='ReLU',
-                              kernel_regularizer='l2',
                               input_dim=n_feat),
-        tf.keras.layers.Dropout(rate=0.25),
         tf.keras.layers.Dense(units=128, activation='ReLU'),
-        tf.keras.layers.Dropout(rate=0.25),
         tf.keras.layers.Dense(units=64, activation='ReLU'),
-        tf.keras.layers.Dropout(rate=0.25),
         tf.keras.layers.Dense(units=n_classes+1, activation='sigmoid')
     ])
 
