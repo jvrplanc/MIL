@@ -101,9 +101,9 @@ train_test_data_after = data_proc.split_and_proc_instances(n_splits,
 n_feat = train_test_data_after[0].X_train.shape[1] - omit_first_cols
 n_classes = np.max(data_labeled_flat[:, -1])
 
-model_labeled = models_weighted.baseline_inst_model(n_feat, n_classes)
+model_labeled = ml_models_inst.baseline_inst_model(n_feat, n_classes)
 
-history_after, evals_after, acc_after = models_weighted.fit_and_test(n_splits=n_splits,
+history_after, evals_after, acc_after = ml_models_inst.fit_and_test(n_splits=n_splits,
                                                                     model=model_labeled,
                                                                     data=train_test_data_after,
                                                                     epochs=epochs,
